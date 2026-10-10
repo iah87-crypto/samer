@@ -2,7 +2,7 @@
 
 **Samer** turns a written speech into a calm, easy-to-read teleprompter on a laptop, tablet or phone.
 
-**Open the app:** https://iah87-crypto.github.io/samer/
+**Open the app:** https://jn12555.github.io/samer/
 
 - Upload a Word (.docx) or PDF speech, in English or Arabic
 - Sections, salutations, the closing line, facts and figures, and a key message per section are set up for you
