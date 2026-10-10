@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#111214">
 <title>Samer</title>
+<script>
+/* password screen: SHA-256 of "samer:" + password ('' = no password). A simple lock, not strong security. */
+window.SAMER_PASS_HASH = 'c78473b0384621eb658461bd40de4858d91b723ade8790ec251f0a8b193f9055';
+(function () { try { var h = window.SAMER_PASS_HASH;
+  if (!h || localStorage.getItem('samer_unlocked') === h || sessionStorage.getItem('samer_unlocked') === h) document.documentElement.classList.add('unlocked');
+} catch (e) { document.documentElement.classList.add('unlocked'); } })();
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -204,6 +211,22 @@ button{cursor:pointer}
 #ePrev .seclab:first-child{margin-top:0}
 #ePrev .seclab span:last-child{flex:0 0 auto;font-variant-numeric:tabular-nums}
 
+/* password screen */
+html:not(.unlocked) body > :not(#gate):not(script){display:none!important}
+html.unlocked #gate{display:none}
+#gate{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.gbox{width:min(380px,100%);text-align:center}
+.gbox .logo{width:72px;height:72px;margin:0 auto 14px;display:block}
+.gbox h1{margin:0 0 4px;font-size:30px;font-weight:800;letter-spacing:-.02em}
+.gbox p{margin:0 0 22px;color:var(--muted)}
+.gbox form{display:flex;flex-direction:column;gap:10px;text-align:left}
+.gbox input[type=password]{border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;font-size:16px;outline:none}
+.gbox input[type=password]:focus{border-color:var(--muted)}
+.gbox label{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--muted)}
+.gbox .btn{justify-content:center}
+.gerr{color:var(--danger);font-size:13.5px;min-height:1.2em;margin:0}
+.gbox.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
 /* toast + player */
 #note{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:200;max-width:90vw;text-align:center}
 #note.on{opacity:1;transform:translate(-50%,0)}
@@ -217,6 +240,21 @@ button{cursor:pointer}
 </head>
 <body>
 
+<!-- ============ PASSWORD SCREEN ============ -->
+<div id="gate">
+  <div class="gbox" id="gbox">
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><defs><mask id="samer-gm"><rect width="64" height="64" fill="#000"/><circle cx="32" cy="32" r="21" fill="#fff"/><circle cx="41" cy="25" r="17" fill="#000"/></mask></defs><rect width="64" height="64" rx="14" fill="#0e0f12"/><g mask="url(#samer-gm)" fill="#ffd54a"><rect y="11" width="64" height="3"/><rect y="16.5" width="64" height="3"/><rect y="22" width="64" height="3"/><rect y="27.5" width="64" height="3"/><rect y="33" width="64" height="3.5" fill="#fff"/><rect y="39" width="64" height="3"/><rect y="44.5" width="64" height="3"/><rect y="50" width="64" height="3"/></g><path d="M6 30.5 11 34.75 6 39Z" fill="#ff5252"/><path d="M58 30.5 53 34.75 58 39Z" fill="#ff5252"/><rect x=".75" y=".75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.5"/></svg>
+    <h1 class="grad">Samer</h1>
+    <p>Your speaking companion. Please enter the password.</p>
+    <form id="gateForm" autocomplete="on">
+      <input type="text" name="username" value="samer" autocomplete="username" hidden>
+      <input type="password" id="gatePw" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+      <label><input type="checkbox" id="gateRemember" checked> Remember this device</label>
+      <p class="gerr" id="gateErr" role="alert"></p>
+      <button class="btn primary big" type="submit">Enter</button>
+    </form>
+  </div>
+</div>
 <!-- ============ HOME ============ -->
 <section id="home" class="wrap">
   <div class="brand">
@@ -350,6 +388,7 @@ button{cursor:pointer}
       <h3>Credits</h3>
       <p>Designed and made by JN. © 2026 · All rights reserved.</p>
       <p class="muted">Version 1.0 · October 2026</p>
+      <button class="btn" id="lockBtn" hidden>🔒 Lock Samer on this device</button>
     </section>
 
     <section class="sideBody" id="pReadme" hidden>
@@ -410,6 +449,7 @@ button{cursor:pointer}
       <ul>
         <li><b>Storage:</b> speeches live in this browser only. They are not synced between devices, private windows forget them, and clearing browser data deletes them. Export or Send to phone to keep a copy.</li>
         <li><b>Internet:</b> see “Working offline” above. The very first visit always needs a connection.</li>
+        <li><b>Password:</b> I ask for it once per device (untick “Remember this device” on shared computers; About me → Lock removes it). It is a simple lock that keeps casual visitors out, not strong security: the app's code is public on GitHub. Your speeches are never online either way.</li>
         <li><b>iPhone / iPad:</b> exported .html files opened from Mail or Files only show a static preview. Use <b>Send to phone</b> instead. Safari has no fullscreen: use Share → Add to Home Screen.</li>
         <li><b>Screen sleep:</b> I keep the screen awake on recent browsers (iOS 16.4+, current Chrome/Edge). On older devices set Auto-Lock to “Never”.</li>
         <li><b>Automatic layout is a best guess.</b> Always check sections, salutations and key messages before going on stage. Key messages are picked from your sentences, not written by AI.</li>
@@ -1951,10 +1991,59 @@ function playerMain(DATA) {
   function onlineState() { $('offPill').hidden = navigator.onLine; }
   window.addEventListener('online', onlineState); window.addEventListener('offline', onlineState); onlineState();
 
+  /* ---------- password screen (a simple lock: the hash is public, so it only keeps casual visitors out) ---------- */
+  function sha256js(s) {   // fallback where crypto.subtle is unavailable (e.g. some local-file contexts)
+    function r(v, n) { return (v >>> n) | (v << (32 - n)); }
+    var K = [], H = [], p = 2, i, j;
+    for (var c = 0; c < 64; p++) { for (j = 2; j * j <= p; j++) if (p % j === 0) break; if (j * j > p) { if (c < 8) H[c] = (Math.pow(p, 1 / 2) * 4294967296) | 0; K[c++] = (Math.pow(p, 1 / 3) * 4294967296) | 0; } }
+    var b = Array.from(new TextEncoder().encode(s)), l = b.length * 8; b.push(0x80);
+    while (b.length % 64 !== 56) b.push(0);
+    for (i = 7; i >= 0; i--) b.push(i > 3 ? 0 : (l >>> (i * 8)) & 255);
+    for (i = 0; i < b.length; i += 64) {
+      var w = [], a = H.slice(0);
+      for (j = 0; j < 64; j++) {
+        if (j < 16) w[j] = (b[i + j * 4] << 24) | (b[i + j * 4 + 1] << 16) | (b[i + j * 4 + 2] << 8) | b[i + j * 4 + 3];
+        else w[j] = (w[j - 16] + (r(w[j - 15], 7) ^ r(w[j - 15], 18) ^ (w[j - 15] >>> 3)) + w[j - 7] + (r(w[j - 2], 17) ^ r(w[j - 2], 19) ^ (w[j - 2] >>> 10))) | 0;
+        var t1 = (a[7] + (r(a[4], 6) ^ r(a[4], 11) ^ r(a[4], 25)) + ((a[4] & a[5]) ^ (~a[4] & a[6])) + K[j] + w[j]) | 0;
+        var t2 = ((r(a[0], 2) ^ r(a[0], 13) ^ r(a[0], 22)) + ((a[0] & a[1]) ^ (a[0] & a[2]) ^ (a[1] & a[2]))) | 0;
+        a = [(t1 + t2) | 0].concat(a.slice(0, 7)); a[4] = (a[4] + t1) | 0;
+      }
+      for (j = 0; j < 8; j++) H[j] = (H[j] + a[j]) | 0;
+    }
+    return H.map(function (v) { return ('0000000' + (v >>> 0).toString(16)).slice(-8); }).join('');
+  }
+  async function sha256hex(s) {
+    if (window.crypto && crypto.subtle) {
+      var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+      return Array.from(new Uint8Array(buf)).map(function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+    }
+    return sha256js(s);
+  }
+  window.TP_sha256 = sha256hex;   // used to set the password hash
+  var started = false;
+  function startApp() { if (started) return; started = true; renderLib(); mountDemo(); openSharedLink(); }
+  $('gateForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var h = await sha256hex('samer:' + $('gatePw').value);
+    if (h === window.SAMER_PASS_HASH) {
+      try { ($('gateRemember').checked ? localStorage : sessionStorage).setItem('samer_unlocked', h); } catch (er) {}
+      document.documentElement.classList.add('unlocked'); $('gatePw').value = ''; startApp();
+    } else {
+      $('gateErr').textContent = 'That password is not right. Please try again.';
+      var g = $('gbox'); g.classList.remove('shake'); void g.offsetWidth; g.classList.add('shake');
+      $('gatePw').select();
+    }
+  });
+  $('gatePw').addEventListener('input', function () { $('gateErr').textContent = ''; });
+  $('lockBtn').hidden = !window.SAMER_PASS_HASH;
+  $('lockBtn').addEventListener('click', function () {
+    try { localStorage.removeItem('samer_unlocked'); sessionStorage.removeItem('samer_unlocked'); } catch (e) {}
+    location.replace(location.pathname + location.search);
+  });
+
   /* ---------- init ---------- */
-  renderLib();
-  mountDemo();
-  openSharedLink();
+  if (document.documentElement.classList.contains('unlocked')) startApp();
+  else setTimeout(function () { $('gatePw').focus(); }, 50);
 })();
 </script>
 </body>
